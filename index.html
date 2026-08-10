@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Деловые связи — Елена Антонович</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Деловые связи. Елена Антонович</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --hs:Cambria,"Times New Roman",Georgia,"Liberation Serif",serif;
-  --bs:Calibri,"Segoe UI",system-ui,-apple-system,"Liberation Sans",Arial,sans-serif;
+  --hs:Cambria,"PT Serif",Georgia,"Times New Roman","Liberation Serif",serif;
+  --bs:Calibri,"PT Sans","Segoe UI",system-ui,-apple-system,"Liberation Sans",Arial,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:#111;overflow:hidden;font-family:var(--bs);
-  -webkit-font-smoothing:antialiased}
-#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
-#deck{position:relative;width:1280px;height:720px;transform-origin:center center;
-  box-shadow:0 20px 70px rgba(0,0,0,.55);overflow:hidden}
+html,body{height:100%;width:100%;background:#111;overflow:hidden;font-family:var(--bs);
+  position:fixed;inset:0;-webkit-font-smoothing:antialiased;overscroll-behavior:none}
+#stage{position:absolute;inset:0;overflow:hidden}
+#deck{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;overflow:hidden}
 .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .45s ease}
 .slide.on{opacity:1;visibility:visible}
 .slide > div{position:absolute}
@@ -29,6 +31,11 @@ html,body{height:100%;background:#111;overflow:hidden;font-family:var(--bs);
 #nav button{width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:#1A1A1A;
   font-size:16px;cursor:pointer}
 #hint{position:fixed;left:16px;bottom:14px;color:#777;font-size:12px;z-index:6}
+@media (max-width:900px){#hint{display:none}#nav{opacity:.55}}
+#rot{position:fixed;left:50%;top:26px;transform:translateX(-50%);z-index:7;display:none;
+  padding:9px 16px;border-radius:20px;background:rgba(255,255,255,.14);color:#fff;
+  font-size:13px;white-space:nowrap;backdrop-filter:blur(6px)}
+@media (orientation:portrait) and (max-width:820px){#rot{display:block}}
 @media print{html,body{overflow:visible;background:#fff}
   #deck{box-shadow:none;transform:none!important}
   .slide{position:relative;opacity:1;visibility:visible;page-break-after:always}
@@ -39,11 +46,21 @@ html,body{height:100%;background:#111;overflow:hidden;font-family:var(--bs);
 <div id="bar"></div>
 <div id="nav"><button id="prev">‹</button><button id="next">›</button><button id="full">⛶</button></div>
 <div id="hint">← → пробел · F во весь экран</div>
+<div id="rot">Поверните телефон горизонтально</div>
 <script>
 var S=[].slice.call(document.querySelectorAll('.slide')),i=0,D=document.getElementById('deck');
-function fit(){var k=Math.min(window.innerWidth/1280,window.innerHeight/720);
-  D.style.transform='scale('+k+')'}
-window.addEventListener('resize',fit);fit();
+function fit(){
+  var vv=window.visualViewport,
+      vw=(vv&&vv.width)||document.documentElement.clientWidth||window.innerWidth,
+      vh=(vv&&vv.height)||document.documentElement.clientHeight||window.innerHeight,
+      k=Math.min(vw/1280,vh/720),
+      x=Math.round((vw-1280*k)/2),y=Math.round((vh-720*k)/2);
+  D.style.transform='translate('+x+'px,'+y+'px) scale('+k+')';
+}
+window.addEventListener('resize',fit);
+window.addEventListener('orientationchange',function(){setTimeout(fit,250)});
+if(window.visualViewport){window.visualViewport.addEventListener('resize',fit);}
+setTimeout(fit,300);fit();
 function show(n){
   if(n<0||n>=S.length)return;
   S[i].classList.remove('on');
